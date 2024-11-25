@@ -3,18 +3,21 @@ FROM alpine:3.17.3
 
 CMD ["/bin/sh"]
 
+# 设置时区
+ENV TZ="Asia/Shanghai"
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 # Setup HAProxy
 ENV HAPROXY_MAJOR 2.2
-ENV HAPROXY_VERSION 2.2.17
-#curl -SL "http://www.haproxy.org/download/${HAPROXY_MAJOR}/src/haproxy-${HAPROXY_VERSION}.tar.gz" -o haproxy.tar.gz
+ENV HAPROXY_VERSION 2.2.33
+#curl -SL "https://www.haproxy.org/download/${HAPROXY_MAJOR}/src/haproxy-${HAPROXY_VERSION}.tar.gz" -o haproxy.tar.gz
 #curl -SL "https://src.fedoraproject.org/repo/pkgs/haproxy/haproxy-${HAPROXY_VERSION}.tar.gz" -o haproxy.tar.gz
 
 RUN /bin/sh -c set -x \
   && sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositories \         
   && apk update \
   && apk add --no-cache --virtual .build-deps     ca-certificates     gcc     libc-dev     linux-headers     lua5.3-dev     make     openssl     openssl-dev     pcre2-dev     readline-dev     tar     zlib-dev      \         
-  && wget -O haproxy.tar.gz "https://src.fedoraproject.org/repo/pkgs/haproxy/haproxy-${HAPROXY_VERSION}.tar.gz"      \         
+  && wget -O haproxy.tar.gz "https://www.haproxy.org/download/${HAPROXY_MAJOR}/src/haproxy-${HAPROXY_VERSION}.tar.gz"      \
   && mkdir -p /usr/src/haproxy      \         
   && tar -xzf haproxy.tar.gz -C /usr/src/haproxy --strip-components=1       \         
   && rm haproxy.tar.gz      \         
